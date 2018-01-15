@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='utf-8'?>
+<scheme description="" title="" version="2.0">
+	<nodes>
+		<node id="0" name="Wikipedia" position="(172.0, 159.0)" project_name="Orange3-Text" qualified_name="orangecontrib.text.widgets.owwikipedia.OWWikipedia" title="Wikipedia" version="" />
+		<node id="1" name="Data Table" position="(386.0, 162.0)" project_name="Orange3" qualified_name="Orange.widgets.data.owtable.OWDataTable" title="Data Table" version="" />
+		<node id="2" name="Save Data" position="(532.0, 156.0)" project_name="Orange3" qualified_name="Orange.widgets.data.owsave.OWSave" title="Save Data" version="" />
+	</nodes>
+	<links>
+		<link enabled="true" id="0" sink_channel="Data" sink_node_id="1" source_channel="Corpus" source_node_id="0" />
+		<link enabled="true" id="1" sink_channel="Data" sink_node_id="2" source_channel="Selected Data" source_node_id="1" />
+	</links>
+	<annotations />
+	<thumbnail />
+	<node_properties>
+		<properties format="literal" node_id="0">{'__version__': 1, 'language': 'pt', 'savedWidgetGeometry': b'\x01\xd9\xd0\xcb\x00\x02\x00\x00\x00\x00\x03\x02\x00\x00\x00\xf6\x00\x00\x04\xa9\x00\x00\x03%\x00\x00\x03\x02\x00\x00\x01\x12\x00\x00\x04\xa9\x00\x00\x03%\x00\x00\x00\x00\x00\x00\x00\x00\x07\x80', 'query_list': ['alegria', 'tristeza', 'medo', 'raiva', 'nojo', 'aversão', 'confiança', 'surpresa', 'tédio', 'ódio'], 'text_includes': ['Title', 'Content', 'Summary', 'Url'], 'articles_per_query': 10}</properties>
+		<properties format="pickle" node_id="1">gAN9cQAoWA4AAABjb2xvcl9ieV9jbGFzc3EBiFgLAAAAc2VsZWN0X3Jvd3NxAohYCwAAAGF1dG9f
+Y29tbWl0cQOIWA4AAABkaXN0X2NvbG9yX1JHQnEEKEvcS9xL3Ev/dHEFWBMAAABzYXZlZFdpZGdl
+dEdlb21ldHJ5cQZDMgHZ0MsAAgAAAAACRgAAAQYAAAVlAAADKQAAAkYAAAEiAAAFZQAAAykAAAAA
+AAAAAAeAcQdYEgAAAHNob3dfZGlzdHJpYnV0aW9uc3EIiVgQAAAAY29udGV4dF9zZXR0aW5nc3EJ
+XXEKY09yYW5nZS53aWRnZXRzLnNldHRpbmdzCkNvbnRleHQKcQspgXEMfXENKFgGAAAAdmFsdWVz
+cQ59cQ8oWA0AAABzZWxlY3RlZF9yb3dzcRBdcREoSwBLAUsCSwNLBEsFSwZLB0sISwlLCksLSwxL
+DUsOSw9LEEsRSxJLE0sUSxVLFksXSxhLGUsaSxtLHEsdSx5LH0sgSyFLIksjSyRLJUsmSydlWAsA
+AABfX3ZlcnNpb25fX3ESSwFYDQAAAHNlbGVjdGVkX2NvbHNxE11xFChLAEsBSwJLA0sESwVLBmV1
+WAUAAABtZXRhc3EVfXEWWAoAAABhdHRyaWJ1dGVzcRd9cRhYDgAAAG9yZGVyZWRfZG9tYWlucRld
+cRpYBAAAAHRpbWVxG0dB1mdoW6wcY3ViYWgSSwFYFQAAAHNob3dfYXR0cmlidXRlX2xhYmVsc3Ec
+iHUu
+</properties>
+		<properties format="literal" node_id="2">{'last_dir': '/home/labic-redbull/IC', '__version__': 1, 'auto_save': False, 'last_filter': 'Comma-separated values (*.csv *.csv.gz *.csv.bz2 *.csv.xz)', 'savedWidgetGeometry': b'\x01\xd9\xd0\xcb\x00\x02\x00\x00\x00\x00\x03`\x00\x00\x01\xce\x00\x00\x04K\x00\x00\x02M\x00\x00\x03`\x00\x00\x01\xea\x00\x00\x04K\x00\x00\x02M\x00\x00\x00\x00\x00\x00\x00\x00\x07\x80'}</properties>
+	</node_properties>
+</scheme>
