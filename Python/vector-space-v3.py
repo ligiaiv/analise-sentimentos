@@ -69,7 +69,7 @@ def Phrase_to_Model(phrase):
 	phrase_words_in_dict={}
 	clean_phrase=[]
 	for word in phrase:
-		if (word not in STOPWORDS) and (word not in chars_to_remove):
+		if (word not in STOPWORDS) and (word not in chars_to_remove) or (word in NEGATIVE_WORDS[language] ):
 			clean_phrase.append(word)
 	phrase = clean_phrase
 	for word in phrase:
@@ -91,7 +91,10 @@ def Phrase_to_Model(phrase):
 		else:
 			vowel_repeat = 0
 
+		f_is_negative=0
+		print(temp_word)
 		if temp_word in NEGATIVE_WORDS[language]:
+			print('found negative')
 			f_is_negative = 1;
 			negative_positions.append(phrase.index(temp_word));
 		# get sistance from negative word
@@ -114,11 +117,41 @@ def Phrase_to_Model(phrase):
 			word_info={'IS_FIRST':f_is_first,
 						'UPPER':f_upper,
 						'VOWEL_REPEAT':vowel_repeat,
-						'IS_NEGATIVE':f_is_negative
+						'IS_NEGATIVE':f_is_negative,
+						'POSITION_IN_PHRASE':phrase.index(temp_word)
 					}
 			phrase_words_in_dict[word_index]=word_info
 
 			# phrase_model.extend([word_index,f_is_first,f_upper,vowel_repeat,f_is_negative])
+	# FIND DISTANCE to NEGATIVE WORD
+	for index,word_info in phrase_words_in_dict.items():
+		print('oi')
+		if len(negative_positions) != 0:
+			word_position=word_info['POSITION_IN_PHRASE']
+			min_distance=500
+			for neg_word in negative_positions:
+				distance=abs(neg_word-word_position)
+				if distance < min_distance:
+					min_distance=distance 
+			# distance = min(abs(negative_positions-word_info['POSITION_IN_PHRASE']))
+			phrase_words_in_dict[index]['DISTANCE_TO_NEGATIVE']=min_distance
+		else:
+			phrase_words_in_dict[index]['DISTANCE_TO_NEGATIVE']=0
+			print(distance)
 
+print('Going through lines in file, cleaning lines')
+file_in=open(name_file_in,'r')
+for line in tqdm(file_in):
+	# print(line)
+	phrase = line
+	for char in chars_to_remove:
+		phrase=phrase.replace(char,' ')
+	for char in chars_to_detect:
+		phrase = phrase.replace(char,' '+char+' ')
+	# phrase = phrase.replace('  ',' ')
+	word_vector = phrase.split(' ')
 
+	phrase_in_vector = Phrase_to_Model(word_vector)
+	# phrase_list.append(Phrase_to_Model(line))
+	# phrase_list.append(phrase_in_vector)
 
