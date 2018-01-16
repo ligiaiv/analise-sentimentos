@@ -14,7 +14,7 @@ import re, unidecode,csv
 from tqdm import tqdm
 import sys
 language = 'english'
-OCOURRENCES_MINIMUM = 5
+OCOURRENCES_MINIMUM = 2
 # -------------------------------------------------------------
 #  tem que colocar essa parte pra funcionar depois o stemmer
 # ----------------
@@ -68,10 +68,12 @@ def Phrase_to_Model(phrase):
 	f_next_is_first = 1
 	phrase_words_in_dict={}
 	clean_phrase=[]
+	# remove stop words
 	for word in phrase:
 		if (word not in STOPWORDS) and (word not in chars_to_remove) or (word in NEGATIVE_WORDS[language] ):
 			clean_phrase.append(word)
 	phrase = clean_phrase
+	# 
 	for word in phrase:
 		f_upper = int(word.isupper())
 
@@ -92,9 +94,9 @@ def Phrase_to_Model(phrase):
 			vowel_repeat = 0
 
 		f_is_negative=0
-		print(temp_word)
+		# print(temp_word)
 		if temp_word in NEGATIVE_WORDS[language]:
-			print('found negative')
+			# print('found negative')
 			f_is_negative = 1;
 			negative_positions.append(phrase.index(temp_word));
 		# get sistance from negative word
@@ -108,38 +110,56 @@ def Phrase_to_Model(phrase):
 			if word not in word_dict:
 				word_dict[word]=1
 			else:
-				word_index = list(word_dict.keys()).index(word)
+				word_index = list(word_dict.keys()).index(word)+1
 				if word_index not in phrase_model:
 					word_dict[word]+=1
 	
 			# Construct Phrase Model
-			word_index = list(word_dict.keys()).index(word)
+			word_index = list(word_dict.keys()).index(word)+1
 			word_info={'IS_FIRST':f_is_first,
 						'UPPER':f_upper,
 						'VOWEL_REPEAT':vowel_repeat,
 						'IS_NEGATIVE':f_is_negative,
-						'POSITION_IN_PHRASE':phrase.index(temp_word)
+						'WORD_INDEX': word_index
 					}
-			phrase_words_in_dict[word_index]=word_info
+			phrase_words_in_dict[phrase.index(temp_word)]=word_info
 
 			# phrase_model.extend([word_index,f_is_first,f_upper,vowel_repeat,f_is_negative])
 	# FIND DISTANCE to NEGATIVE WORD
-	for index,word_info in phrase_words_in_dict.items():
-		print('oi')
+	for word_position,word_info in phrase_words_in_dict.items():
 		if len(negative_positions) != 0:
-			word_position=word_info['POSITION_IN_PHRASE']
+		
 			min_distance=500
 			for neg_word in negative_positions:
 				distance=abs(neg_word-word_position)
 				if distance < min_distance:
 					min_distance=distance 
 			# distance = min(abs(negative_positions-word_info['POSITION_IN_PHRASE']))
-			phrase_words_in_dict[index]['DISTANCE_TO_NEGATIVE']=min_distance
+			phrase_words_in_dict[word_position]['DISTANCE_TO_NEGATIVE']=min_distance
 		else:
-			phrase_words_in_dict[index]['DISTANCE_TO_NEGATIVE']=0
-			print(distance)
+			phrase_words_in_dict[word_position]['DISTANCE_TO_NEGATIVE']=0
 
+	return phrase_words_in_dict
+	# return_vector=[]
+	# for index,word_info in phrase_words_in_dict.items():
+	# 	return_vector.extend([index,word_info['IS_FIRST'],word_info['UPPER'],word_info['VOWEL_REPEAT'],word_info['IS_NEGATIVE'],word_info['DISTANCE_TO_NEGATIVE']])
+	# return return_vector
+
+
+#################################################################
+#																#
+#		MAIN 													#
+#																#
+#################################################################
+
+# name_file_out = '/'.join((name_file_in.split('/').pop(0)).insert(0,'out_files').insert(-1,'out_file'))
+name_file_out =name_file_in.split('/')
+name_file_out[0]='out_files'
+name_file_out[-1]+='_out_files'
+name_file_out='/'.join(name_file_out)
+# quit()
 print('Going through lines in file, cleaning lines')
+phrase_list=[]
 file_in=open(name_file_in,'r')
 for line in tqdm(file_in):
 	# print(line)
@@ -150,8 +170,28 @@ for line in tqdm(file_in):
 		phrase = phrase.replace(char,' '+char+' ')
 	# phrase = phrase.replace('  ',' ')
 	word_vector = phrase.split(' ')
+	phrase_list.append(Phrase_to_Model(word_vector))
 
-	phrase_in_vector = Phrase_to_Model(word_vector)
-	# phrase_list.append(Phrase_to_Model(line))
-	# phrase_list.append(phrase_in_vector)
+# REMOVING LITTLE OCOURRENCES and writing to model
+print('Removing little ocourrences...')
 
+little_ocourrences = [list(word_dict.keys()).index(word) for word in word_dict if word_dict[word] <= OCOURRENCES_MINIMUM]
+
+final_matrix=[]
+# print(phrase_list)
+for phrase in tqdm(phrase_list, total=len(phrase_list)):
+	phrase_vector=[]
+	for position,word in phrase.items():
+
+		if word['WORD_INDEX'] not in little_ocourrences:
+			phrase_vector.extend([word['WORD_INDEX'],word['IS_FIRST'],word['UPPER'],word['VOWEL_REPEAT'],word['IS_NEGATIVE'],word['DISTANCE_TO_NEGATIVE']])
+	final_matrix.append(phrase_vector)
+
+
+print('Writing result in file...')
+with open(name_file_out,'w') as out_file:
+	spamwriter = csv.writer(out_file, delimiter=' ')
+	for row in tqdm(final_matrix, total=len(final_matrix)):
+		if not row:
+			row = [0,0,0,0,0,0]
+		spamwriter.writerow(row)
