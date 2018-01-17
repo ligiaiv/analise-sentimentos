@@ -14,7 +14,7 @@ import re, unidecode,csv
 from tqdm import tqdm
 import sys
 language = 'english'
-OCOURRENCES_MINIMUM = 2
+OCOURRENCES_MINIMUM = 5
 # -------------------------------------------------------------
 #  tem que colocar essa parte pra funcionar depois o stemmer
 # ----------------
@@ -73,8 +73,12 @@ def Phrase_to_Model(phrase):
 		if (word not in STOPWORDS) and (word not in chars_to_remove) or (word in NEGATIVE_WORDS[language] ):
 			clean_phrase.append(word)
 	phrase = clean_phrase
+	print(phrase)
+	quit()
 	# 
 	for word in phrase:
+		if word is '':
+			continue
 		f_upper = int(word.isupper())
 
 		if(f_next_is_first):
@@ -155,7 +159,7 @@ def Phrase_to_Model(phrase):
 # name_file_out = '/'.join((name_file_in.split('/').pop(0)).insert(0,'out_files').insert(-1,'out_file'))
 name_file_out =name_file_in.split('/')
 name_file_out[0]='out_files'
-name_file_out[-1]+='_out_files'
+# name_file_out[-1]+='_out_files'
 name_file_out='/'.join(name_file_out)
 # quit()
 print('Going through lines in file, cleaning lines')
@@ -172,10 +176,10 @@ for line in tqdm(file_in):
 	word_vector = phrase.split(' ')
 	phrase_list.append(Phrase_to_Model(word_vector))
 
-# REMOVING LITTLE OCOURRENCES and writing to model
-print('Removing little ocourrences...')
+# REMOVING LITTLE OCCURRENCES and writing to model
+print('Removing little occurrences...')
 
-little_ocourrences = [list(word_dict.keys()).index(word) for word in word_dict if word_dict[word] <= OCOURRENCES_MINIMUM]
+little_occurrences = [list(word_dict.keys()).index(word) for word in word_dict if word_dict[word] <= OCOURRENCES_MINIMUM]
 
 final_matrix=[]
 # print(phrase_list)
@@ -183,15 +187,22 @@ for phrase in tqdm(phrase_list, total=len(phrase_list)):
 	phrase_vector=[]
 	for position,word in phrase.items():
 
-		if word['WORD_INDEX'] not in little_ocourrences:
+		if word['WORD_INDEX'] not in little_occurrences:
 			phrase_vector.extend([word['WORD_INDEX'],word['IS_FIRST'],word['UPPER'],word['VOWEL_REPEAT'],word['IS_NEGATIVE'],word['DISTANCE_TO_NEGATIVE']])
 	final_matrix.append(phrase_vector)
 
 
 print('Writing result in file...')
-with open(name_file_out,'w') as out_file:
+with open(name_file_out+'_OUT_FILE','w') as out_file:
 	spamwriter = csv.writer(out_file, delimiter=' ')
 	for row in tqdm(final_matrix, total=len(final_matrix)):
 		if not row:
 			row = [0,0,0,0,0,0]
 		spamwriter.writerow(row)
+
+print('Writing word list...')
+# print(len(word_dict))
+with open(name_file_out+'_WORD_LIST','w') as word_list_file:
+	for word in word_dict:
+		if word != '':
+			word_list_file.write(word+'\n')
