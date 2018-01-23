@@ -1,5 +1,6 @@
 import nltk
 import nltk.stem
+import bisect
 from nltk import FreqDist
 
 from nltk.stem import WordNetLemmatizer
@@ -14,7 +15,7 @@ import re, unidecode,csv
 from tqdm import tqdm
 import sys
 language = 'english'
-OCOURRENCES_MINIMUM = 5
+OCOURRENCES_MINIMUM = 3
 # -------------------------------------------------------------
 #  tem que colocar essa parte pra funcionar depois o stemmer
 # ----------------
@@ -69,13 +70,16 @@ def Phrase_to_Model(phrase):
 	phrase_words_in_dict={}
 	clean_phrase=[]
 	# remove stop words
+
+
 	for word in phrase:
+		word = word.strip(' ')
+		word = stemmer1.stem(word)
 		if (word not in STOPWORDS) and (word not in chars_to_remove) or (word in NEGATIVE_WORDS[language] ):
 			clean_phrase.append(word)
 	phrase = clean_phrase
-	print(phrase)
-	quit()
-	# 
+
+	#
 	for word in phrase:
 		if word is '':
 			continue
@@ -97,30 +101,29 @@ def Phrase_to_Model(phrase):
 		else:
 			vowel_repeat = 0
 
+
+
 		f_is_negative=0
-		# print(temp_word)
 		if temp_word in NEGATIVE_WORDS[language]:
-			# print('found negative')
 			f_is_negative = 1;
 			negative_positions.append(phrase.index(temp_word));
 		# get sistance from negative word
 		# else:
-		# 	distance_from_negative = 	
+		# 	distance_from_negative =
 
-		word = word.strip(' ')
-		word = stemmer1.stem(word)
 
-		if word not in STOPWORDS:
+		if (word not in STOPWORDS) or (word in NEGATIVE_WORDS[language]) :
 			if word not in word_dict:
 				word_dict[word]=1
 			else:
 				word_index = list(word_dict.keys()).index(word)+1
 				if word_index not in phrase_model:
 					word_dict[word]+=1
-	
+
 			# Construct Phrase Model
 			word_index = list(word_dict.keys()).index(word)+1
-			word_info={'IS_FIRST':f_is_first,
+			word_info={	'WORD':word,
+						'IS_FIRST':f_is_first,
 						'UPPER':f_upper,
 						'VOWEL_REPEAT':vowel_repeat,
 						'IS_NEGATIVE':f_is_negative,
@@ -131,17 +134,24 @@ def Phrase_to_Model(phrase):
 			# phrase_model.extend([word_index,f_is_first,f_upper,vowel_repeat,f_is_negative])
 	# FIND DISTANCE to NEGATIVE WORD
 	for word_position,word_info in phrase_words_in_dict.items():
-		if len(negative_positions) != 0:
-		
-			min_distance=500
-			for neg_word in negative_positions:
-				distance=abs(neg_word-word_position)
-				if distance < min_distance:
-					min_distance=distance 
-			# distance = min(abs(negative_positions-word_info['POSITION_IN_PHRASE']))
-			phrase_words_in_dict[word_position]['DISTANCE_TO_NEGATIVE']=min_distance
-		else:
-			phrase_words_in_dict[word_position]['DISTANCE_TO_NEGATIVE']=0
+		# if len(negative_positions) != 0:
+
+		# 	min_distance=500
+		# 	for neg_word in negative_positions:
+		# 		distance=abs(neg_word-word_position)
+		# 		if distance < min_distance:
+		# 			min_distance=distance
+		# 	# distance = min(abs(negative_positions-word_info['POSITION_IN_PHRASE']))
+		# 	phrase_words_in_dict[word_position]['DISTANCE_TO_NEGATIVE']=min_distance
+		# else:
+		# 	phrase_words_in_dict[word_position]['DISTANCE_TO_NEGATIVE']=0
+		i = bisect.bisect_left(negative_positions,word_position)
+		distance=0
+		if(i < len(negative_positions)):
+			distance = negative_positions[i]-word_position
+
+		phrase_words_in_dict[word_position]['DISTANCE_TO_NEGATIVE']=distance
+
 
 	return phrase_words_in_dict
 	# return_vector=[]
@@ -161,7 +171,6 @@ name_file_out =name_file_in.split('/')
 name_file_out[0]='out_files'
 # name_file_out[-1]+='_out_files'
 name_file_out='/'.join(name_file_out)
-# quit()
 print('Going through lines in file, cleaning lines')
 phrase_list=[]
 file_in=open(name_file_in,'r')
@@ -179,12 +188,13 @@ for line in tqdm(file_in):
 # REMOVING LITTLE OCCURRENCES and writing to model
 print('Removing little occurrences...')
 
-little_occurrences = [list(word_dict.keys()).index(word) for word in word_dict if word_dict[word] <= OCOURRENCES_MINIMUM]
+little_occurrences = [list(word_dict.keys()).index(word)+1 for word in word_dict if word_dict[word] < OCOURRENCES_MINIMUM]
 
 final_matrix=[]
 # print(phrase_list)
 for phrase in tqdm(phrase_list, total=len(phrase_list)):
 	phrase_vector=[]
+
 	for position,word in phrase.items():
 
 		if word['WORD_INDEX'] not in little_occurrences:
@@ -201,7 +211,6 @@ with open(name_file_out+'_OUT_FILE','w') as out_file:
 		spamwriter.writerow(row)
 
 print('Writing word list...')
-# print(len(word_dict))
 with open(name_file_out+'_WORD_LIST','w') as word_list_file:
 	for word in word_dict:
 		if word != '':
