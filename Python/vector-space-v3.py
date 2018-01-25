@@ -106,7 +106,7 @@ def Phrase_to_Model(phrase):
 		f_is_negative=0
 		if temp_word in NEGATIVE_WORDS[language]:
 			f_is_negative = 1;
-			negative_positions.append(phrase.index(temp_word));
+			negative_positions.append(phrase.index(word));
 		# get sistance from negative word
 		# else:
 		# 	distance_from_negative =
@@ -145,14 +145,17 @@ def Phrase_to_Model(phrase):
 		# 	phrase_words_in_dict[word_position]['DISTANCE_TO_NEGATIVE']=min_distance
 		# else:
 		# 	phrase_words_in_dict[word_position]['DISTANCE_TO_NEGATIVE']=0
-		i = bisect.bisect_left(negative_positions,word_position)
+		i = bisect.bisect_right(negative_positions,word_position)-1
+	
 		distance=0
-		if(i < len(negative_positions)):
-			distance = negative_positions[i]-word_position
+		# if(i < len(negative_positions)):
+		if(i >=0):
+			distance = word_position-negative_positions[i]
+
 
 		phrase_words_in_dict[word_position]['DISTANCE_TO_NEGATIVE']=distance
 
-
+	
 	return phrase_words_in_dict
 	# return_vector=[]
 	# for index,word_info in phrase_words_in_dict.items():
