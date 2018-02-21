@@ -70,7 +70,7 @@ TEST_file = False
 
 
 try:
-	print('here')
+	# print('here')
 	with open(word_dict_file_name,'r') as old_word_dict_file:
 		for word in old_word_dict_file:
 			word=word.strip('\n')
@@ -167,7 +167,7 @@ def Phrase_to_Model(phrase):
 
 
 		phrase_words_in_dict[word_position]['DISTANCE_TO_NEGATIVE']=distance
-		print(phrase_words_in_dict)
+		# print(phrase_words_in_dict)
 
 	return phrase_words_in_dict
 	# return_vector=[]
@@ -200,6 +200,7 @@ for line in tqdm(file_in):
 	# phrase = phrase.replace('  ',' ')
 	word_vector = phrase.split(' ')
 	phrase_list.append(Phrase_to_Model(word_vector))
+	# print(phrase_list)
 # REMOVING LITTLE OCCURRENCES and writing to model
 
 final_matrix=[]
