@@ -15,7 +15,7 @@ import re, unidecode,csv
 from tqdm import tqdm
 import sys
 language = 'english'
-OCOURRENCES_MINIMUM = 3
+OCOURRENCES_MINIMUM = 5
 # -------------------------------------------------------------
 #  tem que colocar essa parte pra funcionar depois o stemmer
 # ----------------
