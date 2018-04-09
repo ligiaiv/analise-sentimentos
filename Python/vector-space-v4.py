@@ -14,13 +14,13 @@ from stopwords import STOPWORDS
 import re, unidecode,csv
 from tqdm import tqdm
 import sys
-language = 'english'
+language = 'portuguese'
 OCOURRENCES_MINIMUM = 5
 # -------------------------------------------------------------
 #  tem que colocar essa parte pra funcionar depois o stemmer
 # ----------------
 
-if language is 'portugese':
+if language is 'portuguese':
 	STOPWORDS_DICT = STOPWORDS
 else:
 	STOPWORDS_DICT=nltk.corpus.stopwords.words(language)
