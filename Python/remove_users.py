@@ -23,5 +23,7 @@ with open(name_file_in,'r') as file_in:
 				if '?' in word:
 					new_word = '?'
 				new_line = new_line+new_word
+			else:
+				new_line = new_line+" "+ word
 		file_out.write(new_line+'')
 file_out.close()
