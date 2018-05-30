@@ -14,16 +14,18 @@ except Exception as e:
 
 frases_positivas = []
 frases_negativas = []
-
+i=0
 with open(name_file_in_pos,'r') as file_in_pos:
 	for line in file_in_pos:
+		i = i+1
 		frases_positivas.append(line)
 
 with open(name_file_in_neg,'r') as file_in_neg:
 	for line in file_in_neg:
-		frases_positivas.append(line)
-
+		frases_negativas.append(line)
+print(i)
 pos_len = len(frases_positivas)
+print(pos_len,"  ",pos_len//2)
 
 neg_len = len(frases_negativas)
 
@@ -36,7 +38,7 @@ with open(name_file_out+'_treino','w') as file_out:
 with open(name_file_out+'_teste','w') as file_out:
 	for line in frases_positivas[(pos_len//2):]:
 		file_out.write(line);
-	for line in frases_negativas[:(neg_len//2):]:
+	for line in frases_negativas[(neg_len//2):]:
 		file_out.write(line);
 
 with open(name_file_out+'_treino_score','w') as file_out:
@@ -47,6 +49,9 @@ with open(name_file_out+'_treino_score','w') as file_out:
 
 with open(name_file_out+'_teste_score','w') as file_out:
 	for line in frases_positivas[(pos_len//2):]:
-		file_out.write("1\n");
-	for line in frases_negativas[:(neg_len//2):]:
+		#file_out.write("1\n");
+		print(pos_len)
+
+	for line in frases_negativas[(neg_len//2):]:
+		print("aqui")
 		file_out.write("-1\n");
