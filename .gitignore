@@ -22,6 +22,7 @@ sdist/
 var/
 */datasets/
 */out_files/
+Python/GUI/inputs/
 
 *.egg-info/
 .installed.cfg
