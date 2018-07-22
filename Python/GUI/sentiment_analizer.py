@@ -125,4 +125,5 @@ def process(file_frases,file_pesos,outfile,export_format,language):
 	else:
 		
 		out_df.to_csv(outfile+'.csv')
+	return('OK')
 
