@@ -48,7 +48,7 @@ for i in range(0,9):
 for i in range(0,5):
 	mainframe.columnconfigure(i,weight=0)
 
-mainframe.iconbitmap('@BigFiles/logo.XBM')
+# mainframe.iconbitmap('@BigFiles/logo.XBM')
 # root.resizable(0, 0)
 # mainframe = Frame(root)
 # mainframe.grid(column = 0, row = 0, sticky = (N,W,E,S))
